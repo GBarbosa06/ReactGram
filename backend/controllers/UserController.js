@@ -32,7 +32,7 @@ const register = async (req, res) => {
         name, email, password: passwordHash
     })
 
-    //Check if user was successfully createred and return the token
+    //Check if user was successfully created and return the token
     if(!newUser){
         res.status(422).json({errors: ["Houver um erro, tente novamente mais tarde"]});
         return
@@ -65,11 +65,19 @@ const login = async(req, res) => {
     res.status(201).json({
         _id: user._id,
         profileImage: user.profileImage,
-        toke: generateToken(user._id)
+        token: generateToken(user._id)
     })
+}
+
+// Get current logged in user
+const getCurrentUser = async(req, res) =>{
+    const user = req.user
+
+    res.status(200).json(user);
 }
 
 module.exports = {
     register,
-    login
+    login,
+    getCurrentUser
 }
