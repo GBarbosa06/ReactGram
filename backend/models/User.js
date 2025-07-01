@@ -1,5 +1,5 @@
-const moogose = require('mongoose');
-const {Schema} = moogose;
+const mongoose = require('mongoose');
+const {Schema} = mongoose;
 
 const UserSchema = new Schema ({
     name: String,
@@ -13,6 +13,6 @@ const UserSchema = new Schema ({
     versionKey: false
 });
 
-const User = moogose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
