@@ -50,11 +50,12 @@ const removePhoto = async (req, res) => {
         }
 
         // Check if the user is the owner of the photo
-        // ! erro aqui, o id do usuário não está sendo comparado corretamente
-        if (photo.userId.toString() !== reqUser._id.toString()) {
-            return res.status(422).json({errors: ["Você não tem permissão para remover essa foto!"]});
-        }
-
+        if (!photo.userId.equals(reqUser._id)) {
+            res
+              .status(422)
+              .json({ errors: ["Ocorreu um erro, tente novamente mais tarde"] });
+            return;
+          }
         await Photo.findByIdAndDelete(photo._id);
         res.status(200).json({id: photo._id, message: "Foto removida com sucesso!"});
     } catch (error) {
