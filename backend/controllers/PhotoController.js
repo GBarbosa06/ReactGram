@@ -63,7 +63,76 @@ const removePhoto = async (req, res) => {
     }
 }
 
+// Get all photos
+const getAllPhotos = async (req, res) => {
+
+    const photos = await Photo.find({}).sort([["createdAt", -1]]).exec();
+
+    if (!photos || photos.length === 0) {
+        return res.status(404).json({errors: ["Nenhuma foto encontrada!"]});
+    }
+
+    res.status(200).json(photos);
+
+}
+
+// Get photos by user
+const getUserPhotos = async (req, res) => {
+
+    const {id} = req.params;
+
+    const photos = await Photo.find({userId: id}).sort([["createdAt", -1]]).exec();
+    
+    if (!photos || photos.length === 0) {
+        return res.status(404).json({errors: ["Nenhuma foto encontrada para este usuário!"]});
+    }
+
+    res.status(200).json(photos);
+}
+
+// get photos by id
+const getPhotoById = async (req, res) => {
+    const {id} = req.params;
+
+    const photo = await Photo.findById(id);
+    
+    if (!photo) {
+        return res.status(404).json({errors: ["Photo not found!"]});
+    }
+
+    res.status(200).json(photo);
+}
+
+// update photo
+const updatePhoto = async (req, res) => {
+    const {id} = req.params;
+    const {title} = req.body;
+
+    const photo = await Photo.findById(id);
+    const reqUser = req.user;
+
+    if (!photo) {
+        return res.status(404).json({errors: ["Photo not found!"]});
+    }
+
+    // Check if the user is the owner of the photo
+    if (!photo.userId.equals(reqUser._id)) {
+        return res.status(422).json({errors: ["Você não tem permissão para editar esta foto!"]});
+    }
+
+    if (!title || title.trim() === "") {
+        return res.status(422).json({errors: ["Título é obrigatório!"]});
+    }
+    photo.title = title;
+    const updatedPhoto = await photo.save();
+    res.status(200).json({updatedPhoto, message: "Foto atualizada com sucesso!"});
+};
+
 module.exports = {
     insertPhoto,
     removePhoto,
+    getAllPhotos,
+    getUserPhotos,
+    getPhotoById,
+    updatePhoto,
 }
