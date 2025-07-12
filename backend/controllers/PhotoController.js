@@ -180,6 +180,19 @@ const commentPhoto = async (req, res) => {
     res.status(200).json({comment: userComment, message: "Comentário adicionado com sucesso!"});
 }
 
+// search photos by title
+const searchPhotos = async (req, res) => {
+    const {q} = req.query;
+
+    const photos = await Photo.find({title: new RegExp(q, "i")}).sort([["createdAt", -1]]).exec();
+
+    if (!photos || photos.length === 0) {
+        return res.status(404).json({errors: ["Nenhuma foto encontrada!"]});
+    }
+
+    res.status(200).json(photos);
+}
+
 module.exports = {
     insertPhoto,
     removePhoto,
@@ -189,4 +202,5 @@ module.exports = {
     updatePhoto,
     likePhoto,
     commentPhoto,
+    searchPhotos
 }
